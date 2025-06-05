@@ -10,19 +10,22 @@ def get_city_coords(city_name):
         "key": API_KEY,
         "fields": "items.point"
     }
-    resp = requests.get(url, params=params)
-    if resp.status_code != 200:
-        print(f"Ошибка запроса get_city_coords: {resp.status_code}")
+    try:
+        resp = requests.get(url, params=params)
+        resp.raise_for_status()  # Проверка на HTTP ошибки
+        data = resp.json()
+
+        if data.get("meta", {}).get("code") != 200 or not data.get("result", {}).get("items"):
+            return None
+
+        point = data["result"]["items"][0].get("point")
+        if not point or "lat" not in point or "lon" not in point:
+            return None
+
+        return point["lat"], point["lon"]
+    except requests.exceptions.RequestException as e:
+        print(f"Ошибка запроса get_city_coords: {e}")
         return None
-    data = resp.json()
-    if data.get("meta", {}).get("code") != 200 or not data.get("result", {}).get("items"):
-        print("Город не найден или ошибка в ответе get_city_coords")
-        return None
-    point = data["result"]["items"][0].get("point")
-    if not point or "lat" not in point or "lon" not in point:
-        print("Координаты города отсутствуют")
-        return None
-    return point["lat"], point["lon"]
 
 def search_attractions(lat, lon, radius=5000, limit=20):
     url = "https://catalog.api.2gis.com/3.0/items"
@@ -31,16 +34,19 @@ def search_attractions(lat, lon, radius=5000, limit=20):
         "location": f"{lon},{lat}",
         "key": API_KEY
     }
-    resp = requests.get(url, params=params)
-    if resp.status_code != 200:
-        print(f"Ошибка запроса search_attractions: {resp.status_code}")
+    try:
+        resp = requests.get(url, params=params)
+        resp.raise_for_status()
+        data = resp.json()
+
+        if data.get("meta", {}).get("code") != 200:
+            return []
+
+        items = data.get("result", {}).get("items", [])
+        return items
+    except requests.exceptions.RequestException as e:
+        print(f"Ошибка запроса search_attractions: {e}")
         return []
-    data = resp.json()
-    if data.get("meta", {}).get("code") != 200:
-        print(f"Ошибка в ответе search_attractions: {data.get('meta', {}).get('message')}")
-        return []
-    items = data.get("result", {}).get("items", [])
-    return items
 
 def log_dialog(user_id, text):
     filename = f"log/{user_id}.log"
