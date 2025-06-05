@@ -4,13 +4,13 @@ from telegram.ext import ContextTypes
 from data import user_cities
 from utils import get_city_coords, search_attractions, log_dialog, get_main_keyboard
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def start(update: Update):
     user_id = update.effective_user.id
     text = "Привет! Я бот для поиска достопримечательностей. Используйте меню ниже для навигации."
     await update.message.reply_text(text, reply_markup=get_main_keyboard())
     log_dialog(user_id, f"User: /start\nBot: {text}")
 
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def help_command(update: Update):
     user_id = update.effective_user.id
     text = (
         "Доступные команды:\n"
@@ -42,7 +42,7 @@ async def setcity(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(text, reply_markup=get_main_keyboard())
     log_dialog(user_id, f"User: /setcity {city}\nBot: {text}")
 
-async def search(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def search(update: Update):
     user_id = update.effective_user.id
     if user_id not in user_cities:
         text = "Сначала установите город командой /setcity"
@@ -71,7 +71,7 @@ async def search(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(text, reply_markup=get_main_keyboard())
     log_dialog(user_id, f"User: /search\nBot: {text}")
 
-async def random_attraction(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def random_attraction(update: Update):
     user_id = update.effective_user.id
     if user_id not in user_cities:
         text = "Сначала установите город командой /setcity"
