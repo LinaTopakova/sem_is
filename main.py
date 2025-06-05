@@ -12,5 +12,5 @@ app.add_handler(CommandHandler("random", random_attraction))
 app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), city_name_handler))
 
 print("Бот запущен")
-app.run_polling() 
+app.run_polling() # запрашивает сервер о новых сообщениях или событиях
 
