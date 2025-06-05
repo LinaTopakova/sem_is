@@ -25,7 +25,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def setcity(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
-    city = " ".join(context.args).strip()  # Объединяем аргументы и убираем лишние пробелы
+    city = " ".join(context.args).strip()  
     if not city:
         text = "Пожалуйста, укажите город после команды, например: /setcity Москва"
         await update.message.reply_text(text, reply_markup=get_main_keyboard())

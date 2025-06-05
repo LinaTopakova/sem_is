@@ -1,4 +1,4 @@
-from telegram.ext import ApplicationBuilder, CommandHandler
+from telegram.ext import ApplicationBuilder, CommandHandler #ApplicationBuilder - создание экземпляра бота, CommandHandler — обработка команд от user
 from handlers import *
 from data import TOKEN
 
@@ -11,5 +11,5 @@ app.add_handler(CommandHandler("search", search))
 app.add_handler(CommandHandler("random", random_attraction))
 
 print("Бот запущен")
-app.run_polling()
+app.run_polling() 
 
