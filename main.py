@@ -9,6 +9,7 @@ app.add_handler(CommandHandler("help", help_command))
 app.add_handler(CommandHandler("setcity", setcity))
 app.add_handler(CommandHandler("search", search))
 app.add_handler(CommandHandler("random", random_attraction))
+app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), city_name_handler))
 
 print("Бот запущен")
 app.run_polling() 

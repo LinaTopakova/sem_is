@@ -1,6 +1,6 @@
 import random
 from telegram import Update
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, MessageHandler, filters
 from data import user_cities
 from utils import get_city_coords, search_attractions, log_dialog, get_main_keyboard
 
@@ -23,26 +23,34 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(text, reply_markup=get_main_keyboard())
     log_dialog(user_id, f"User: /help\nBot: {text}")
 
+waiting_for_city = set()
+
 async def setcity(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
-    city = " ".join(context.args).strip()  
-    if not city:
-        text = "Пожалуйста, укажите город после команды, например: /setcity Москва"
-        await update.message.reply_text(text, reply_markup=get_main_keyboard())
-        log_dialog(user_id, f"User: /setcity\nBot: {text}")
+    waiting_for_city.add(user_id)
+    text = "Пожалуйста, введите название города."
+    await update.message.reply_text(text, reply_markup=get_main_keyboard())
+    log_dialog(user_id, f"User: /setcity\nBot: {text}")
+
+async def city_name_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    if user_id not in waiting_for_city:
         return
 
+    city = update.message.text.strip()
     coords = get_city_coords(city)
     if not coords:
-        text = f"Город '{city}' не найден."
+        text = f"Город '{city}' не найден"
         await update.message.reply_text(text, reply_markup=get_main_keyboard())
-        log_dialog(user_id, f"User: /setcity {city}\nBot: {text}")
+        log_dialog(user_id, f"User: {city}\nBot: {text}")
         return
 
     user_cities[user_id] = {"city": city, "coords": coords}
+    waiting_for_city.remove(user_id)
     text = f"Город установлен: {city}"
     await update.message.reply_text(text, reply_markup=get_main_keyboard())
-    log_dialog(user_id, f"User: /setcity {city}\nBot: {text}")
+    log_dialog(user_id, f"User: {city}\nBot: {text}")
+
 
 async def search(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id

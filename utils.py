@@ -56,7 +56,9 @@ def log_dialog(user_id, text):
 
 def get_main_keyboard():
     keyboard = [
-        ["/start"], ["/search"],
-        ["/random"], ["/help"]
+        ["/start"], 
+        ["/setcity", "/search"],
+        ["/random", "/help"]
     ]
     return ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+
